@@ -2,12 +2,14 @@ package com.northcoders.record_shop.model;
 
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 
 @Entity
 @Check(constraints = "stock > 0")
+@Builder
 public class Album {
 
     @Id
