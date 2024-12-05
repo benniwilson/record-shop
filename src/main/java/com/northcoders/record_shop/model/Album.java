@@ -3,12 +3,14 @@ package com.northcoders.record_shop.model;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 
 
 import java.time.LocalDate;
 
 @Entity
 @Builder
+@Getter
 public class Album {
 
     public Album() {}
@@ -26,23 +28,23 @@ public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
-    long id;
+    public long id;
 
     @Column
-    String name;
+    public String name;
 
     @Column
-    String artist;
+    public String artist;
 
     @Column
-    Genre genre;
+    public Genre genre;
 
     @Column
-    LocalDate dateReleased;
+    public LocalDate dateReleased;
 
     @Column
-    double price;
+    public double price;
 
     @Column
-    int stock;
+    public int stock;
 }
