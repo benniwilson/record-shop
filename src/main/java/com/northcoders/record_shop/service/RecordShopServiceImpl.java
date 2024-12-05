@@ -1,21 +1,23 @@
 package com.northcoders.record_shop.service;
 
 import com.northcoders.record_shop.model.Album;
-import com.northcoders.record_shop.repository.AlbumRepository;
+import com.northcoders.record_shop.repository.RecordShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumServiceImpl implements AlbumService {
+@Service
+public class RecordShopServiceImpl implements RecordShopService {
 
     @Autowired
-    AlbumRepository albumRepository;
+    RecordShopRepository recordShopRepository;
 
     @Override
     public List<Album> getAllAlbums() {
         List<Album> albums = new ArrayList<>();
-        albumRepository.findAll().forEach(albums::add);
+        recordShopRepository.findAll().forEach(albums::add);
         return albums;
     }
 }
