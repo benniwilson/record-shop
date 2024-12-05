@@ -3,17 +3,29 @@ package com.northcoders.record_shop.model;
 
 import jakarta.persistence.*;
 import lombok.Builder;
-import org.hibernate.annotations.Check;
+
 
 import java.time.LocalDate;
 
 @Entity
-@Check(constraints = "stock > 0")
 @Builder
 public class Album {
 
+    public Album() {}
+
+    public Album(long id, String name, String artist, Genre genre, LocalDate dateReleased, double price, int stock) {
+        this.id = id;
+        this.stock = stock;
+        this.dateReleased = dateReleased;
+        this.price = price;
+        this.genre = genre;
+        this.artist = artist;
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false, nullable = false)
     long id;
 
     @Column
@@ -25,12 +37,12 @@ public class Album {
     @Column
     Genre genre;
 
-    @Column(name = "date_released")
+    @Column
     LocalDate dateReleased;
 
     @Column
     double price;
 
-    @Column(name = "stock")
+    @Column
     int stock;
 }
