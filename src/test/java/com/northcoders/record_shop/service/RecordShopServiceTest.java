@@ -100,6 +100,4 @@ class RecordShopServiceTest {
         Optional<Album> result = albumService.getAlbumById(id);
         assertThat(album).isEqualTo(result);
     }
-
-
 }
