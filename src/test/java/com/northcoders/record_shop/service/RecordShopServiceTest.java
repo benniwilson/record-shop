@@ -100,4 +100,31 @@ class RecordShopServiceTest {
         Optional<Album> result = albumService.getAlbumById(id);
         assertThat(album).isEqualTo(result);
     }
+
+    @Test
+    @DisplayName("Post album returns the posted album")
+    public void test_postAlbum(){
+        Album album1 = Album.builder()
+                .id(1L)
+                .name("Beerbongs and Bentleys")
+                .genre(Genre.Pop)
+                .price(8.99)
+                .stock(5)
+                .artist("Post Malone")
+                .dateReleased(LocalDate.of(2018,4,27))
+                .build();
+
+        when(albumRepository.save(album1)).thenReturn(album1);
+        Album result = albumService.postAlbum(album1);
+        assertThat(result).isEqualTo(album1);
+    }
+
+    @Test
+    @DisplayName("Post album returns null if the album is null")
+    public void test_postAlbumNull(){
+        Album album1 = null;
+        when(albumRepository.save(album1)).thenReturn(album1);
+        Album result = albumService.postAlbum(album1);
+        assertThat(result).isEqualTo(album1);
+    }
 }
