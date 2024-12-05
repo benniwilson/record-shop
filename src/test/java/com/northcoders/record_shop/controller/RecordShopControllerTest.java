@@ -97,9 +97,36 @@ class RecordShopControllerTest {
         ;
     }
 
- /*   @Test
+    @Test
     @DisplayName("An incorrect ID returns a Not found status code and an optional empty")
-    public void test_getAlbumById(){
-        when(mockRecordShopService.getAlbumById(1L)).thenReturn(Optional.empty());
-    }*/
+    public void test_getAlbumByIdWrongId() throws Exception {
+        Optional<Album> album = Optional.empty();
+        when(mockRecordShopService.getAlbumById(1L)).thenReturn(album);
+        this.mockMvcController.perform(
+                MockMvcRequestBuilders.get("/api/recordshop/1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("A valid ID returns an Ok status code and an album object")
+    public void test_getAlbumById() throws Exception {
+        long id = 9L;
+        Optional<Album> album = Optional.of(Album.builder()
+                .id(id)
+                .name("Beerbongs and Bentleys")
+                .genre(Genre.Pop)
+                .price(8.99)
+                .stock(5)
+                .artist("Post Malone")
+                .dateReleased(LocalDate.of(2018,4,27))
+                .build());
+        when(mockRecordShopService.getAlbumById(id)).thenReturn(album);
+
+        this.mockMvcController.perform(
+                MockMvcRequestBuilders.get("/api/recordshop/" + id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Beerbongs and Bentleys"));
+
+    }
 }
