@@ -2,7 +2,8 @@ package com.northcoders.record_shop.service;
 
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
-import com.northcoders.record_shop.repository.AlbumRepository;
+import com.northcoders.record_shop.repository.RecordShopRepository;
+import com.northcoders.record_shop.service.RecordShopServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,16 +19,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
-class AlbumServiceTest {
+class RecordShopServiceTest {
 
     @Mock
-    AlbumRepository albumRepository;
+    RecordShopRepository albumRepository;
 
     @InjectMocks
-    AlbumServiceImpl albumService;
+    RecordShopServiceImpl albumService;
 
     @Test
-    @DisplayName("getAllAlbumsreturns an empty list with an empty repo")
+    @DisplayName("getAllAlbums returns an empty list with an empty repo")
     public void test_getAllAlbumsEmptyRepo(){
         List<Album> albumList = new ArrayList<>();
         when(albumRepository.findAll()).thenReturn(albumList);
