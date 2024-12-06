@@ -224,7 +224,7 @@ class RecordShopControllerTest {
 
         String requestBody = mapper.writeValueAsString(album);
 
-        when(mockRecordShopService.putAlbum(album, id)).thenThrow(AlbumNotFoundException.class);
+        when(mockRecordShopService.putAlbum(Mockito.any(Album.class), Mockito.any(Long.class))).thenThrow(AlbumNotFoundException.class);
 
         this.mockMvcController.perform(
                         MockMvcRequestBuilders.put("/api/recordshop/1").content(requestBody).accept(MediaType.APPLICATION_JSON)
@@ -256,7 +256,7 @@ class RecordShopControllerTest {
                 .dateReleased(LocalDate.of(2018,4,27))
                 .build();
 
-        when(mockRecordShopService.putAlbum(album2, id)).thenReturn(album2);
+        when(mockRecordShopService.putAlbum(Mockito.any(Album.class), Mockito.any(Long.class))).thenReturn(album2);
         mapper.registerModule(new JavaTimeModule());
         String requestBody1 = mapper.writeValueAsString(album2);
 
