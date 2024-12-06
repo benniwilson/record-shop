@@ -1,9 +1,11 @@
 package com.northcoders.record_shop.service;
 
+import com.northcoders.record_shop.exception.AlbumNotFoundException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.repository.RecordShopRepository;
 import com.northcoders.record_shop.service.RecordShopServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -77,10 +80,8 @@ class RecordShopServiceTest {
     @DisplayName("Method returns optional empty if id doesn't correspond to an album")
     public void test_getAlbumByIdWrongId(){
         long id = 1;
-        Optional<Album> album = Optional.empty();
-        when(albumRepository.findById(id)).thenReturn(album);
-        Optional<Album> result = albumService.getAlbumById(id);
-        assertEquals(album, result);
+        Throwable exception = assertThrows(AlbumNotFoundException.class, () -> albumService.getAlbumById(id));
+        assertEquals("No Album with id: 1, was found in the system", exception.getMessage());
     }
 
     @Test
@@ -97,8 +98,8 @@ class RecordShopServiceTest {
                 .dateReleased(LocalDate.of(2018, 8, 3))
                 .build());
         when(albumRepository.findById(id)).thenReturn(album);
-        Optional<Album> result = albumService.getAlbumById(id);
-        assertThat(album).isEqualTo(result);
+        Album result = albumService.getAlbumById(id);
+        assertThat(album.get()).isEqualTo(result);
     }
 
     @Test
