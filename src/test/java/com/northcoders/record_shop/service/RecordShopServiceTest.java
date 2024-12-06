@@ -4,6 +4,7 @@ import com.northcoders.record_shop.exception.AlbumNotFoundException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.repository.RecordShopRepository;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -198,5 +200,48 @@ class RecordShopServiceTest {
         when(albumRepository.findById(id)).thenReturn(Optional.of(album2));
         Album result = albumService.deleteAlbum(id);
         assertThat(result).isEqualTo(album2);
+    }
+
+    @Test
+    @DisplayName("Method returns the correct Map of which attributes are null/empty")
+    public void test_nullAttributeCatcher(){
+        Album album1 = Album.builder()
+                .id(3L)
+                .dateReleased(LocalDate.of(2023, 12, 4))
+                .name("Post Malone")
+                .build();
+
+        Album album2 = Album.builder()
+                .stock(-5)
+                .price(-13)
+                .build();
+
+        Album album3 = Album.builder()
+                .id(13L)
+                .price(3.99)
+                .stock(12)
+                .genre(Genre.Country)
+                .dateReleased(LocalDate.of(2024,12,6))
+                .artist("Travis Scott")
+                .name("ASTROWORLD")
+                .build();
+
+        Map<String, Boolean> expected1 = Map.of("id", false, "name", false, "artist", true
+        ,"dateReleased",false,"genre",true,"stock",false, "price", true);
+
+        Map<String, Boolean> expected2 = Map.of("id", true, "name", true, "artist", true
+                ,"dateReleased",true,"genre",true,"stock",true, "price", true);
+
+        Map<String, Boolean> expected3 = Map.of("id", false, "name", false, "artist", false
+                ,"dateReleased",false,"genre",false,"stock",false, "price", false);
+
+        Map<String, Boolean> result1 = albumService.nullAttributeCatcher(album1);
+        Map<String, Boolean> result2 = albumService.nullAttributeCatcher(album2);
+        Map<String, Boolean> result3 = albumService.nullAttributeCatcher(album3);
+
+        System.out.println(result3.toString());
+        assertTrue(result1.equals(expected1));
+        assertTrue(result2.equals(expected2));
+        assertTrue(result3.equals(expected3));
     }
 }

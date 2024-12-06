@@ -6,9 +6,7 @@ import com.northcoders.record_shop.repository.RecordShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RecordShopServiceImpl implements RecordShopService {
@@ -60,5 +58,46 @@ public class RecordShopServiceImpl implements RecordShopService {
         }else{
             throw new AlbumNotFoundException(String.format("No Album with id: %s, was found in the system",id));
         }
+    }
+
+    @Override
+    public Map<String, Boolean> nullAttributeCatcher(Album album) {
+        Map<String, Boolean> mapAlbum = new HashMap<>();
+        if (album.getId() == 0){
+            mapAlbum.put("id", true);
+        }else{
+            mapAlbum.put("id", false);
+        }
+        if (album.getName() == null || album.getName().isEmpty()){
+            mapAlbum.put("name", true);
+        }else{
+            mapAlbum.put("name", false);
+        }
+        if (album.getArtist() == null || album.getArtist().isEmpty()){
+            mapAlbum.put("artist", true);
+        }else{
+            mapAlbum.put("artist", false);
+        }
+        if (album.getDateReleased() == null){
+            mapAlbum.put("dateReleased", true);
+        }else {
+            mapAlbum.put("dateReleased", false);
+        }
+        if (album.getGenre() == null){
+            mapAlbum.put("genre", true);
+        }else{
+            mapAlbum.put("genre", false);
+        }
+        if (album.getStock() < 0){
+            mapAlbum.put("stock", true);
+        }else {
+            mapAlbum.put("stock", false);
+        }
+        if (album.getPrice() <= 0.0){
+            mapAlbum.put("price", true);
+        }else{
+            mapAlbum.put("price", false);
+        }
+        return mapAlbum;
     }
 }
