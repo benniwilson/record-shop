@@ -26,11 +26,8 @@ public class RecordShopController{
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Album>> getAlbumById(@PathVariable(name = "id") Long id){
-        Optional<Album> album = recordShopService.getAlbumById(id);
-        if (album.isEmpty()){
-            return new ResponseEntity<>(album, HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Album> getAlbumById(@PathVariable(name = "id") Long id){
+        Album album = recordShopService.getAlbumById(id);
         return new ResponseEntity<>(album, HttpStatus.OK);
     }
 

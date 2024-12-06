@@ -2,9 +2,11 @@ package com.northcoders.record_shop.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.northcoders.record_shop.exception.AlbumNotFoundException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.service.RecordShopServiceImpl;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -100,10 +103,9 @@ class RecordShopControllerTest {
     }
 
     @Test
-    @DisplayName("An incorrect ID returns a Not found status code and an optional empty")
+    @DisplayName("An incorrect ID returns a Not found status code")
     public void test_getAlbumByIdWrongId() throws Exception {
-        Optional<Album> album = Optional.empty();
-        when(mockRecordShopService.getAlbumById(1L)).thenReturn(album);
+        when(mockRecordShopService.getAlbumById(1L)).thenThrow(AlbumNotFoundException.class);
         this.mockMvcController.perform(
                 MockMvcRequestBuilders.get("/api/recordshop/1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -113,7 +115,7 @@ class RecordShopControllerTest {
     @DisplayName("A valid ID returns an Ok status code and an album object")
     public void test_getAlbumById() throws Exception {
         long id = 9L;
-        Optional<Album> album = Optional.of(Album.builder()
+        Album album = Album.builder()
                 .id(id)
                 .name("Beerbongs and Bentleys")
                 .genre(Genre.Pop)
@@ -121,7 +123,7 @@ class RecordShopControllerTest {
                 .stock(5)
                 .artist("Post Malone")
                 .dateReleased(LocalDate.of(2018,4,27))
-                .build());
+                .build();
         when(mockRecordShopService.getAlbumById(id)).thenReturn(album);
 
         this.mockMvcController.perform(
