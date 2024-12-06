@@ -172,4 +172,31 @@ class RecordShopServiceTest {
         assertThat(result.getId()).isEqualTo(id);
         assertThat(result.getName()).isEqualTo("Beerbongs and Bentleys");
     }
+
+    @Test
+    @DisplayName("Throws an exception when passed an invalid id")
+    public void test_deleteAlbumWrongId(){
+        long id = 4;
+        Throwable exception = assertThrows(AlbumNotFoundException.class, () -> albumService.deleteAlbum(id));
+        assertEquals("No Album with id: 4, was found in the system", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Returns the album that was deleted when passed a valid id")
+    public void test_deleteAlbum(){
+        long id = 1L;
+        Album album2 = Album.builder()
+                .id(1L)
+                .name("Beerbongs and Bentleys")
+                .genre(Genre.Pop)
+                .price(8.99)
+                .stock(5)
+                .artist("Post Malone")
+                .dateReleased(LocalDate.of(2018,4,27))
+                .build();
+
+        when(albumRepository.findById(id)).thenReturn(Optional.of(album2));
+        Album result = albumService.deleteAlbum(id);
+        assertThat(result).isEqualTo(album2);
+    }
 }

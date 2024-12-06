@@ -48,4 +48,17 @@ public class RecordShopServiceImpl implements RecordShopService {
             throw new AlbumNotFoundException(String.format("No Album with id: %s, was found in the system",id));
         }
     }
+
+    @Override
+    public Album deleteAlbum(long id) {
+        Optional<Album> album = recordShopRepository.findById(id);
+        Album deletedAlbum;
+        if (album.isPresent()){
+            deletedAlbum = album.get();
+            recordShopRepository.deleteById(id);
+            return deletedAlbum;
+        }else{
+            throw new AlbumNotFoundException(String.format("No Album with id: %s, was found in the system",id));
+        }
+    }
 }
