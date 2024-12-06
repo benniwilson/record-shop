@@ -37,4 +37,15 @@ public class RecordShopServiceImpl implements RecordShopService {
     public Album postAlbum(Album album){
       return recordShopRepository.save(album);
     }
+
+    @Override
+    public Album putAlbum(Album album, long id) {
+        Optional<Album> optionalAlbum = recordShopRepository.findById(id);
+        if (optionalAlbum.isPresent()){
+            album.setId(id);
+            return recordShopRepository.save(album);
+        }else{
+            throw new AlbumNotFoundException(String.format("No Album with id: %s, was found in the system",id));
+        }
+    }
 }

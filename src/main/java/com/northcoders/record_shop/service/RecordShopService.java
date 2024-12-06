@@ -9,4 +9,5 @@ public interface RecordShopService {
     public List<Album> getAllAlbums();
     public Album getAlbumById(Long id);
     public Album postAlbum(Album album);
+    public Album putAlbum(Album album, long id);
 }
