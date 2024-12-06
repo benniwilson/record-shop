@@ -264,9 +264,41 @@ class RecordShopControllerTest {
                         MockMvcRequestBuilders.put("/api/recordshop/3").contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBody1).accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[3].id").value(3))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[3].name").value("Beerbongs and Bentleys"));
-
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(3))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Beerbongs and Bentleys"));
     }
 
+    @Test
+    @DisplayName("An invalid id returns a not found status code")
+    public void test_deleteIdWrongId() throws Exception {
+        long id = 1L;
+        when(mockRecordShopService.deleteAlbum(id)).thenThrow(AlbumNotFoundException.class);
+
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.delete("/api/recordshop/1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("A valid id returns the deleted album")
+    public void test_deleteId() throws Exception {
+        long id  = 12L;
+        Album album1 = Album.builder()
+                .id(id)
+                .name("ASTROWORLD")
+                .stock(8)
+                .genre(Genre.Rap)
+                .price(10.99)
+                .artist("Travis Scott")
+                .dateReleased(LocalDate.of(2018, 8, 3))
+                .build();
+
+        when(mockRecordShopService.deleteAlbum(id)).thenReturn(album1);
+
+        this.mockMvcController.perform(
+                MockMvcRequestBuilders.delete("/api/recordshop/"+id))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(12))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("ASTROWORLD"));
+    }
 }

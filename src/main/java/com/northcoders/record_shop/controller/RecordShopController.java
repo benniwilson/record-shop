@@ -45,4 +45,10 @@ public class RecordShopController{
         return new ResponseEntity<>(newAlbum, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Album> deleteAlbum(@PathVariable(name = "id") long id){
+        Album album = recordShopService.deleteAlbum(id);
+        return new ResponseEntity<>(album, HttpStatus.OK);
+    }
+
 }
