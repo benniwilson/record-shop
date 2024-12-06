@@ -4,6 +4,7 @@ package com.northcoders.record_shop.model;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @Getter
+@Setter
 public class Album {
 
     public Album() {}
