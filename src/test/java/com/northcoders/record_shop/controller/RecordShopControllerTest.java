@@ -6,7 +6,6 @@ import com.northcoders.record_shop.exception.AlbumNotFoundException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.service.RecordShopServiceImpl;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -26,7 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
@@ -218,4 +215,58 @@ class RecordShopControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(2))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("ASTROWORLD"));
     }
+
+    @Test
+    @DisplayName("An incorrect id returns a not found status code")
+    public void test_putAlbumIncorrectId() throws Exception {
+        long id = 1L;
+        Album album = new Album();
+
+        String requestBody = mapper.writeValueAsString(album);
+
+        when(mockRecordShopService.putAlbum(album, id)).thenThrow(AlbumNotFoundException.class);
+
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.put("/api/recordshop/1").content(requestBody).accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Updates the album object at the id given")
+    public void test_putAlbum() throws Exception {
+        long id = 3;
+        Album album1 = Album.builder()
+                .id(id)
+                .name("ASTROWORLD")
+                .stock(8)
+                .genre(Genre.Rap)
+                .price(10.99)
+                .artist("Travis Scott")
+                .dateReleased(LocalDate.of(2018, 8, 3))
+                .build();
+
+        Album album2 = Album.builder()
+                .id(3L)
+                .name("Beerbongs and Bentleys")
+                .genre(Genre.Pop)
+                .price(8.99)
+                .stock(5)
+                .artist("Post Malone")
+                .dateReleased(LocalDate.of(2018,4,27))
+                .build();
+
+        when(mockRecordShopService.putAlbum(album2, id)).thenReturn(album2);
+        mapper.registerModule(new JavaTimeModule());
+        String requestBody1 = mapper.writeValueAsString(album2);
+
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.put("/api/recordshop/3").contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBody1).accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[3].id").value(3))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[3].name").value("Beerbongs and Bentleys"));
+
+    }
+
 }
