@@ -1,10 +1,10 @@
 package com.northcoders.record_shop.service;
 
 import com.northcoders.record_shop.exception.AlbumNotFoundException;
+import com.northcoders.record_shop.exception.NullAttributeException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.repository.RecordShopRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -120,12 +120,25 @@ class RecordShopServiceTest {
     }
 
     @Test
-    @DisplayName("Post album returns null if the album is null")
+    @DisplayName("Post album returns bad request if any attributes are invalid")
     public void test_postAlbumNull(){
-        Album album1 = null;
-        when(albumRepository.save(album1)).thenReturn(album1);
-        Album result = albumService.postAlbum(album1);
-        assertThat(result).isEqualTo(album1);
+        Album album1 = Album.builder().build();
+        Album album2 = Album.builder()
+                        .id(-4)
+                                .price(2.99)
+                                        .genre(Genre.Country)
+                                                .name("Wrecking Ball")
+                                                        .artist("Miley Cyrus")
+                                                                .stock(4)
+                                                                        .dateReleased(LocalDate.EPOCH)
+                                                                                .build();
+        Album album3 = Album.builder()
+                        .name("All of me")
+                                .price(12.50)
+                                        .artist("John Legend").build();
+        assertThrows(NullAttributeException.class, () -> albumService.postAlbum(album1));
+        assertThrows(NullAttributeException.class, () -> albumService.postAlbum(album2));
+        assertThrows(NullAttributeException.class, () -> albumService.postAlbum(album3));
     }
 
     @Test
@@ -143,6 +156,28 @@ class RecordShopServiceTest {
                 .build();
         Throwable exception = assertThrows(AlbumNotFoundException.class, () -> albumService.putAlbum(album1,id));
         assertEquals("No Album with id: 4, was found in the system", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Throws exception if passed invalid attributes")
+    public void test_putAlbumWrongAttributes(){
+        long id = 4;
+        Album album1 = Album.builder()
+                .id(id)
+                .genre(Genre.Pop)
+                .price(-8.99)
+                .stock(5)
+                .artist("Post Malone")
+                .dateReleased(LocalDate.of(2018,4,27))
+                .build();
+
+        Album album2 = Album.builder()
+                .price(14.99)
+                .name("ASTROWORLD")
+                .artist("Travis Scott")
+                .build();
+        assertThrows(NullAttributeException.class, () -> albumService.putAlbum(album1,id));
+        assertThrows(NullAttributeException.class, () -> albumService.putAlbum(album2,id));
     }
 
     @Test
@@ -229,7 +264,7 @@ class RecordShopServiceTest {
         Map<String, Boolean> expected1 = Map.of("id", false, "name", false, "artist", true
         ,"dateReleased",false,"genre",true,"stock",false, "price", true);
 
-        Map<String, Boolean> expected2 = Map.of("id", true, "name", true, "artist", true
+        Map<String, Boolean> expected2 = Map.of("id", false, "name", true, "artist", true
                 ,"dateReleased",true,"genre",true,"stock",true, "price", true);
 
         Map<String, Boolean> expected3 = Map.of("id", false, "name", false, "artist", false
@@ -239,7 +274,6 @@ class RecordShopServiceTest {
         Map<String, Boolean> result2 = albumService.nullAttributeCatcher(album2);
         Map<String, Boolean> result3 = albumService.nullAttributeCatcher(album3);
 
-        System.out.println(result3.toString());
         assertTrue(result1.equals(expected1));
         assertTrue(result2.equals(expected2));
         assertTrue(result3.equals(expected3));
