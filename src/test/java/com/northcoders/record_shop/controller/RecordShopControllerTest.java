@@ -3,6 +3,7 @@ package com.northcoders.record_shop.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.northcoders.record_shop.exception.AlbumNotFoundException;
+import com.northcoders.record_shop.exception.NullAttributeException;
 import com.northcoders.record_shop.model.Album;
 import com.northcoders.record_shop.model.Genre;
 import com.northcoders.record_shop.service.RecordShopServiceImpl;
@@ -134,10 +135,20 @@ class RecordShopControllerTest {
     @Test
     @DisplayName("Returns a bad request status code if the request body album is null")
     public void test_postAlbumNull() throws Exception {
-        Album album = null;
+        Album album = Album.builder().build();
         when(mockRecordShopService.postAlbum(album)).thenReturn(album);
         this.mockMvcController.perform(
                         MockMvcRequestBuilders.post("/api/recordshop"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Album album1 = Album.builder()
+                .stock(20)
+                .price(12.44)
+                .name("Dua Lipa")
+                .build();
+        when(mockRecordShopService.postAlbum(album1)).thenReturn(album1);
+        this.mockMvcController.perform(
+                MockMvcRequestBuilders.post("/api/recordshop"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -220,8 +231,17 @@ class RecordShopControllerTest {
     @DisplayName("An incorrect id returns a not found status code")
     public void test_putAlbumIncorrectId() throws Exception {
         long id = 1L;
-        Album album = new Album();
+        Album album = Album.builder()
+                .id(2L)
+                .name("ASTROWORLD")
+                .stock(8)
+                .genre(Genre.Rap)
+                .price(10.99)
+                .artist("Travis Scott")
+                .dateReleased(LocalDate.of(2018, 8,3))
+                .build();
 
+        mapper.registerModule(new JavaTimeModule());
         String requestBody = mapper.writeValueAsString(album);
 
         when(mockRecordShopService.putAlbum(Mockito.any(Album.class), Mockito.any(Long.class))).thenThrow(AlbumNotFoundException.class);
@@ -230,6 +250,23 @@ class RecordShopControllerTest {
                         MockMvcRequestBuilders.put("/api/recordshop/1").content(requestBody).accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Null attributes returns a bad request status code")
+    public void test_putAlbumNullAttributes() throws Exception {
+        long id = 1L;
+        Album album = Album.builder().build();
+
+        when(mockRecordShopService.putAlbum(Mockito.any(Album.class), Mockito.any(Long.class))).thenThrow(NullAttributeException.class);
+
+        mapper.registerModule(new JavaTimeModule());
+        String requestBody = mapper.writeValueAsString(album);
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.put("/api/recordshop/1").content(requestBody).accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
     }
 
     @Test

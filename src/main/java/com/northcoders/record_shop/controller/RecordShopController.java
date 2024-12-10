@@ -33,16 +33,12 @@ public class RecordShopController{
 
     @PostMapping
     public ResponseEntity<Album> postAlbum(@RequestBody Album album){
-        if (album == null){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(recordShopService.postAlbum(album), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Album> putAlbum(@RequestBody Album album, @PathVariable(name = "id") long id){
-        Album newAlbum = recordShopService.putAlbum(album, id);
-        return new ResponseEntity<>(newAlbum, HttpStatus.OK);
+        return new ResponseEntity<>(recordShopService.putAlbum(album,id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
